@@ -37,7 +37,7 @@ spec:
             memory: "128Mi"
         livenessProbe:
           httpGet:
-            path: /api/health
+            path: /health
             port: 5000
           initialDelaySeconds: 10
           periodSeconds: 10

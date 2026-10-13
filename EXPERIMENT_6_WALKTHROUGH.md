@@ -28,8 +28,7 @@ Instead of a basic static text string, **CloudOps Pulse** is a purpose-built Dev
 
 | File | Purpose |
 | :--- | :--- |
-| `app.py` | Flask application server with health probes & telemetry |
-| `templates/index.html` | Modern responsive dark-mode DevOps dashboard |
+| `app.py` | Self-contained Flask application with endpoints & pod identifier |
 | `requirements.txt` | Python dependencies (`Flask==3.0.3`) |
 | `Dockerfile` | Multi-layer container build based on `python:3.11-slim` |
 | `deployment.yaml` | Kubernetes Deployment (2 replicas, resource limits, health check) |
