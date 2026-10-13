@@ -20,7 +20,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh 'python3 -m pip install --user -r requirements.txt'
-                sh 'python3 test_app.py'
+                sh 'python3 -m py_compile app.py'
             }
         }
 

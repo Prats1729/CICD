@@ -116,8 +116,8 @@ git push origin main
 
 #### Step 4: AWS EC2 Instance Launch & Security Group
 1. Launch an EC2 instance:
-   - **OS**: Ubuntu 22.04 LTS or Amazon Linux 2023.
-   - **Instance Type**: `t2.medium` or `t3.medium` (Jenkins + Docker need at least 2 GB RAM; `t2.micro` will freeze or run out of memory during Java execution).
+   - **OS**: Amazon Linux 2023 (AL2023) or Amazon Linux 2 (AL2).
+   - **Instance Type**: `t2.micro` (100% AWS Free Tier eligible).
 2. **Security Group Rules (Inbound)**:
    - **SSH**: Port `22` (Source: My IP or 0.0.0.0/0).
    - **Custom TCP**: Port `8080` (Jenkins web UI, Source: `0.0.0.0/0`).
@@ -152,35 +152,39 @@ To allow Jenkins running on EC2 to authenticate with ECR without embedding hardc
 ### Phase 3: Jenkins Installation & Configuration
 
 #### Step 5 & 6: Install & Start Jenkins and Docker on EC2
-SSH into your EC2 instance (`ssh -i your-key.pem ubuntu@<EC2-PUBLIC-IP>`):
+SSH into your EC2 instance (`ssh -i your-key.pem ec2-user@<EC2-PUBLIC-IP>`):
 
-**For Ubuntu 22.04 / 24.04 LTS:**
+**For Amazon Linux 2023 (AL2023) / Amazon Linux 2 (AL2) on `t2.micro`:**
 ```bash
-# 1. Update system & install dependencies
-sudo apt-get update -y
-sudo apt-get install -y openjdk-17-jdk git curl docker.io unzip
+# 1. CRITICAL for t2.micro: Create 2GB Swap Memory (Prevents Jenkins/JVM crash/freeze)
+sudo dd if=/dev/zero of=/swapfile bs=128M count=16
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
 
-# 2. Install AWS CLI v2 (if not already installed)
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-rm -rf aws awscliv2.zip
+# 2. Update packages and install Java 17 Corretto, Git, Python3, and Docker
+sudo dnf update -y
+sudo dnf install -y java-17-amazon-corretto git python3 python3-pip docker wget
 
-# 3. Add Jenkins Official Repository & Install Jenkins
-sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-sudo apt-get update -y
-sudo apt-get install -y jenkins
+# (Note: If using older Amazon Linux 2, use 'sudo yum' instead of 'sudo dnf' and 'sudo amazon-linux-extras install docker java-openjdk11 -y')
+
+# 3. Add Jenkins Official RedHat/Amazon Linux Repository and Install Jenkins
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+sudo dnf upgrade -y
+sudo dnf install -y jenkins
 
 # 4. Start Docker and Jenkins services
 sudo systemctl enable --now docker
 sudo systemctl enable --now jenkins
 
-# 5. Give Jenkins user permission to run Docker without sudo
+# 5. Give Jenkins user (and ec2-user) permission to use Docker
 sudo usermod -aG docker jenkins
+sudo usermod -aG docker ec2-user
 sudo systemctl restart jenkins
 
-# 6. Verify versions
+# 6. Verify versions (AWS CLI is already pre-installed on Amazon Linux)
 python3 --version
 git --version
 docker --version
@@ -188,6 +192,8 @@ java -version
 aws --version
 sudo systemctl status jenkins --no-pager
 ```
+
+*(Note: If you ever use Ubuntu instead, use `sudo apt-get update -y && sudo apt-get install -y openjdk-17-jdk docker.io`)*
 
 #### Step 5 (Continued): Unlock Jenkins
 Retrieve the initial administrator password:
