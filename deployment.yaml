@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: studentapp-deployment
+  labels:
+    app: studentapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: studentapp
+  template:
+    metadata:
+      labels:
+        app: studentapp
+    spec:
+      containers:
+      - name: studentapp
+        # If running locally on Minikube / Docker:
+        image: studentapp:v1
+        imagePullPolicy: IfNotPresent
+        # If using Amazon ECR image from Experiment 5, uncomment the line below:
+        # image: 164607045936.dkr.ecr.ap-south-1.amazonaws.com/image-regi:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: APP_ENV
+          value: "Kubernetes Cluster (Minikube)"
+        - name: APP_VERSION
+          value: "v1.0.0"
+        resources:
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
