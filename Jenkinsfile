@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_REGION     = 'ap-south-1'
-        AWS_ACCOUNT_ID = '164607045936'
+        AWS_ACCOUNT_ID = '971023774760'
         ECR_REPOSITORY = 'image-regi'
         IMAGE_NAME     = 'cloud-image'
         ECR_REGISTRY   = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
