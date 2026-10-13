@@ -14,30 +14,15 @@ spec:
       labels:
         app: studentapp
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: studentapp
-        # If running locally on Minikube / Docker:
-        image: studentapp:v1
-        imagePullPolicy: IfNotPresent
-        # If using Amazon ECR image from Experiment 5, uncomment the line below:
-        # image: 164607045936.dkr.ecr.ap-south-1.amazonaws.com/image-regi:latest
+        image: 971023774760.dkr.ecr.ap-south-1.amazonaws.com/image-regi:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
-        env:
-        - name: APP_ENV
-          value: "Kubernetes Cluster (Minikube)"
-        - name: APP_VERSION
-          value: "v1.0.0"
-        resources:
-          limits:
-            cpu: "250m"
-            memory: "256Mi"
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
         livenessProbe:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 10
-          periodSeconds: 10
