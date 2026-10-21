@@ -24,7 +24,7 @@ function Deploy-To-Kubernetes {
 
     Write-Host "`n------------------------------------------------------------" -ForegroundColor Cyan
     Write-Host "🔔 [TRIGGER] GitHub Change Detected! Starting CI/CD Pipeline..." -ForegroundColor Yellow
-    Write-Host "Commit Message: $CommitMsg" -ForegroundColor Gray
+    Write-Host "Commit MMessage: $CommitMsg" -ForegroundColor Gray
     Write-Host "------------------------------------------------------------" -ForegroundColor Cyan
 
     # Step 1: Run Automated Tests
