@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     host = socket.gethostname()
-    return f"This is Home Page - CCD Lab Experiment 6 | Running on Pod: {host}"
+    return f"This is Home Page - CCD Lab Experiment 6 version 2 | Running on Pod: {host}"
 
 @app.route("/about")
 def about():
