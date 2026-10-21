@@ -18,8 +18,8 @@ spec:
       - name: ecr-secret
       containers:
       - name: studentapp
-        image: 971023774760.dkr.ecr.ap-south-1.amazonaws.com/image-regi:latest
-        imagePullPolicy: Always
+        image: 971023774760.dkr.ecr.ap-south-1.amazonaws.com/assigment5-repo:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
         livenessProbe:

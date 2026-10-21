@@ -10,6 +10,11 @@ pipeline {
         ECR_IMAGE      = "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
     }
 
+    triggers {
+        pollSCM('* * * * *')
+        githubPush()
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -20,7 +25,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh 'python3 -m pip install --user -r requirements.txt'
-                sh 'python3 -m py_compile app.py'
+                sh 'python3 test_app.py'
             }
         }
 
@@ -48,6 +53,17 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 sh 'docker push ${ECR_IMAGE}'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                kubectl apply -f deployment.yaml
+                kubectl apply -f service.yaml
+                kubectl rollout restart deployment/studentapp-deployment
+                kubectl rollout status deployment/studentapp-deployment
+                '''
             }
         }
     }
