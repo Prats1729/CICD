@@ -17,7 +17,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host " Kubernetes Cluster Connected!" -ForegroundColor Green
 }
 
-$IMAGE_NAME = "971023774760.dkr.ecr.ap-south-1.amazonaws.com/assigment5-repo:latest"
+$IMAGE_NAME = "971023774760.dkr.ecr.ap-south-1.amazonaws.com/image-regi:latest"
 
 function Deploy-To-Kubernetes {
     param([string]$CommitMsg)
